@@ -25,6 +25,10 @@
           v-if="isBannerVisible('ticket_field_permission')"
           :isSidebarCollapsed="isCollapsed"
         />
+        <TicketSourceBanner
+          v-if="isBannerVisible('ticket_source')"
+          :isSidebarCollapsed="isCollapsed"
+        />
       </div>
       <SidebarItem
         v-if="isOnboardingStepsCompleted"
@@ -70,6 +74,7 @@ import {
 } from "@/components/icons";
 import CustomerPortalPermissionBanner from "@/components/banners/CustomerPortalPermissionBanner.vue";
 import TicketFieldPermissionBanner from "@/components/banners/TicketFieldPermissionBanner.vue";
+import TicketSourceBanner from "@/components/banners/TicketSourceBanner.vue";
 import ShortcutsModal from "@/components/modals/ShortcutsModal.vue";
 import SettingsModal from "@/components/Settings/SettingsModal.vue";
 import {
@@ -88,7 +93,7 @@ import {
 import { useAuthStore } from "@/stores/auth";
 import { capture } from "@/telemetry";
 import { CUSTOMER_PORTAL_ROOT } from "@/utils";
-import { call, SidebarItem, toast, useColorScheme } from "frappe-ui";
+import { call, SidebarItem, toast } from "frappe-ui";
 import {
   GettingStartedBanner,
   HelpModal,
@@ -101,6 +106,7 @@ import {
 
 import { HelpIcon } from "frappe-ui/icons";
 import { computed, h, markRaw, onMounted, ref } from "vue";
+import { useThemeMenuItem } from "@helpdesk/shared/themeMenu";
 import { useRouter } from "vue-router";
 import AppSidebar from "./AppSidebar.vue";
 import TrialCard from "./TrialCard.vue";
@@ -110,8 +116,6 @@ import { useShortcut } from "@helpdesk/shared/shortcuts";
 import { __ } from "@/translation";
 import Globe from "~icons/lucide/globe";
 import LucideKeyboard from "~icons/lucide/keyboard";
-import LucideMoon from "~icons/lucide/moon";
-import LucideSun from "~icons/lucide/sun";
 import LucideMail from "~icons/lucide/mail";
 import MailOpen from "~icons/lucide/mail-open";
 import MessageCircle from "~icons/lucide/message-circle";
@@ -133,13 +137,7 @@ const authStore = useAuthStore();
 const { isVisible: isBannerVisible } = useBanners();
 
 const { appsMenuOption } = useApps();
-const { colorScheme, toggleColorScheme } = useColorScheme();
-
-const themeMenuItem = computed(() => ({
-  label: __("Toggle theme"),
-  icon: colorScheme.value === "dark" ? LucideSun : LucideMoon,
-  onClick: () => toggleColorScheme(),
-}));
+const themeMenuItem = useThemeMenuItem();
 
 const isFCSite = ref(window.is_fc_site);
 
@@ -182,6 +180,7 @@ const profileSettings = computed(() => [
     icon: "lucide-settings",
     onClick: () => (showSettingsModal.value = true),
   },
+  themeMenuItem.value,
   {
     group: __("Danger"),
     hideLabel: true,
@@ -478,5 +477,10 @@ onMounted(() => {
   useShortcut({ key: ",", meta: true }, () => {
     showSettingsModal.value = !showSettingsModal.value;
   });
+  // back from provider sign-in: the Email Accounts panel reads ?email_oauth itself
+  if (router.currentRoute.value.query.email_oauth) {
+    setActiveSettingsTab("Email Accounts");
+    showSettingsModal.value = true;
+  }
 });
 </script>
