@@ -207,7 +207,7 @@ export interface Ticket {
   status: string;
   subject: string;
   ticket_type: string;
-  via_customer_portal: string;
+  source: string;
   agreement_status: string;
   creation: string;
   feedback_rating?: number;
@@ -292,38 +292,6 @@ export type UserInfo = {
   image: string;
   name: string;
 };
-
-export interface RenderField {
-  label: string;
-  name: string;
-  type: string;
-  placeholder?: string;
-  description?: string;
-}
-
-export interface EmailService {
-  name: string;
-  icon: string;
-  info: string;
-  link: string;
-  custom: boolean;
-}
-
-export type EmailStep = "email-list" | "email-add" | "email-edit";
-
-export interface EmailAccount {
-  email_account_name: string;
-  email_id: string;
-  service: string;
-  api_key?: string;
-  api_secret?: string;
-  password?: string;
-  frappe_mail_site?: string;
-  enable_outgoing?: boolean;
-  enable_incoming?: boolean;
-  default_outgoing?: boolean;
-  default_incoming?: boolean;
-}
 
 export type TicketTab =
   | "activity"
